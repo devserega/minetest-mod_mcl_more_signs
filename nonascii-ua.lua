@@ -1,0 +1,8 @@
+mcl_more_signs.unicode_install({208,132,"0404"})
+mcl_more_signs.unicode_install({208,134,"0406"})
+mcl_more_signs.unicode_install({208,135,"0407"})
+mcl_more_signs.unicode_install({209,148,"0454"})
+mcl_more_signs.unicode_install({209,150,"0456"})
+mcl_more_signs.unicode_install({209,151,"0457"})
+mcl_more_signs.unicode_install({210,144,"0490"})
+mcl_more_signs.unicode_install({210,145,"0491"})

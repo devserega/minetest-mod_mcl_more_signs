@@ -1,0 +1,7 @@
+mcl_more_signs.unicode_install({195,132,"00c4"})
+mcl_more_signs.unicode_install({195,150,"00d6"})
+mcl_more_signs.unicode_install({195,156,"00dc"})
+mcl_more_signs.unicode_install({195,159,"00df"})
+mcl_more_signs.unicode_install({195,164,"00e4"})
+mcl_more_signs.unicode_install({195,182,"00f6"})
+mcl_more_signs.unicode_install({195,188,"00fc"})
