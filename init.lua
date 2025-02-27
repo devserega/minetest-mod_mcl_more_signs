@@ -12,6 +12,7 @@ mcl_more_signs.S = minetest.get_translator(minetest.get_current_modname())
 mcl_more_signs.edit_priv = minetest.settings:get("mcl_more_signs.edit_priv") or "signslib_edit"
 
 dofile(mcl_more_signs.path.."/encoding.lua")
+dofile(mcl_more_signs.path.."/text_texture.lua")
 dofile(mcl_more_signs.path.."/api.lua")
 dofile(mcl_more_signs.path.."/signs.lua")
 dofile(mcl_more_signs.path.."/compat.lua")

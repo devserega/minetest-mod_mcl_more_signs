@@ -4,7 +4,8 @@ local S = mcl_more_signs.S
 
 mcl_more_signs.register_sign("mcl_more_signs:sign_granite", {
 	description = S("Granite Sign"),
-	inventory_image = "signs_lib_sign_wall_granite_inv.png",
+	_tt_help = S("Can be written"),
+	inventory_image = "signs_lib_sign_granite_inv.png",
 	tiles = {
 		"signs_lib_sign_wall_granite.png",
 		"signs_lib_sign_wall_granite_edges.png",
@@ -34,7 +35,8 @@ minetest.register_craft({
 
 mcl_more_signs.register_sign("mcl_more_signs:sign_steel", {
 	description = S("Steel Sign"),
-	inventory_image = "signs_lib_sign_wall_steel_inv.png",
+	_tt_help = S("Can be written"),
+	inventory_image = "signs_lib_sign_steel_inv.png",
 	tiles = {
 		"signs_lib_sign_wall_steel.png", -- 1. Основная поверхность знака
 		"signs_lib_sign_wall_steel_edges.png", -- 2. Края знака
