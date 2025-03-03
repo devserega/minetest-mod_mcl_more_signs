@@ -54,6 +54,7 @@ mcl_more_signs.register_sign("mcl_more_signs:sign_steel", {
 	allow_yard = true,
 	allow_wall = true,
 	use_texture_alpha = "clip",
+	default_color = "mcl_dye:black"
 })
 
 minetest.register_craft({

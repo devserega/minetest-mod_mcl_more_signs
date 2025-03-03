@@ -127,7 +127,7 @@ local function fill_line(x, y, w, c, font_size, colorbgw)
 	c = c or "0"
 	local tex = { }
 	for xx = x, w, colorbgw do
-		table.insert(tex, (":%d,%d=signs_lib_color_"..font_size.."px_%s.png"):format(xx, y, c))
+		table.insert(tex, (":%d,%d=signs_lib_color_" .. font_size .. "px_%s.png"):format(xx, y, c))
 	end
 	return table.concat(tex)
 end
@@ -173,6 +173,35 @@ local function char_tex_wide(font_name, ch)
 	end
 end
 
+-- Функция для получения индекса цвета из mcl_dye
+local function get_dye_color(dye_name)
+	local dyes_table = {
+		{ "mcl_dye:black", "0" },
+		{ "mcl_dye:blue", "1" },
+		{ "mcl_dye:brown", "2" },
+		{ "mcl_dye:cyan", "3"},
+		{ "mcl_dye:dark_green", "4"},
+		{ "mcl_dye:dark_grey", "5"},
+		{ "mcl_dye:green", "6" },
+		{ "mcl_dye:grey", "7" },
+		{ "mcl_dye:lightblue", "8" },
+		{ "mcl_dye:magenta", "9" },
+		{ "mcl_dye:orange", "A" },
+		{ "mcl_dye:pink", "B" },
+		{ "mcl_dye:red", "C" },
+		{ "mcl_dye:violet", "D" },
+		{ "mcl_dye:yellow", "E"},
+		{ "mcl_dye:white", "F"},
+	}
+	
+	for d = 1, #dyes_table do
+		if dyes_table[d][1] == dye_name then
+			return dyes_table[d][2]
+		end
+	end
+	return "0" -- Берем черний цвет, если dye_name нет в словаре
+end
+
 -- Функция make_line_texture выполняет несколько задач:
 -- 1) Разбивает строку на слова и символы, учитывая специальные символы для изменения цвета и шрифта.
 -- 2) Вычисляет ширину каждого символа с учётом шрифта и специальных символов.
@@ -180,7 +209,7 @@ end
 -- 4) Возвращает итоговую текстуру строки.
 -- Эта функция используется для динамического создания текстуры строки для таблички, 
 -- учитывая различные параметры шрифта, цвет и размеры символов.
-local function make_line_texture(line, lineno, pos, line_width, line_height, cwidth_tab, font_size, colorbgw, cwidth_tab_wide, force_unicode_font)
+local function make_line_texture(line, lineno, pos, line_width, line_height, cwidth_tab, font_size, colorbgw, cwidth_tab_wide, text_color)
 	local width = 0
 	local maxw = 0
 	local font_name = "signs_lib_font_" .. font_size .. "px"
@@ -188,9 +217,7 @@ local function make_line_texture(line, lineno, pos, line_width, line_height, cwi
 	local words = { }
 	local node = minetest.get_node(pos)
 	local def = minetest.registered_items[node.name]
-	local default_color = def.default_color or 0
-
-	local cur_color = tonumber(default_color, 16)
+	local cur_color = text_color
 
 	-- We check which chars are available here.
 	for word_i, word in ipairs(line) do
@@ -211,36 +238,11 @@ local function make_line_texture(line, lineno, pos, line_width, line_height, cwi
 			end
 
 			local wide_skip = 0
-			if force_unicode_font then
-				if wide_c then
-					wide_skip = #wide_c + 3
-					wide_type = "u"
-				elseif c:byte() < 0x80 or c:byte() >= 0xa0 then
-					wide_type = "u"
-					local uchar = mcl_more_signs.AnsiToUtf8(c)
-					local code
-					if #uchar == 1 then
-						code = uchar:byte()
-					else
-						code = uchar:byte() % (2 ^ (7 - #uchar))
-						for j = 1, #uchar do
-							code = code * (2 ^ 6) + uchar:byte(j) - 0x80
-						end
-					end
-					wide_c = string.format("%04x", code)
-				end
-			elseif wide_c then
+			if wide_c then
 				wide_skip = #wide_c + 3
 			end
 
-			if c == "#" and escape == 0 and c2:find("[0-9A-Fa-f#^]") then
-				if c2 == "#" or c2 == "^" then
-					escape = 2
-				else
-					i = i + 1
-					cur_color = tonumber(c2, 16)
-				end
-			elseif wide_c then
+			if wide_c then
 				local w, code
 				if wide_type == "x" then
 					w = cwidth_tab_wide[wide_c]
@@ -275,7 +277,7 @@ local function make_line_texture(line, lineno, pos, line_width, line_height, cwi
 						table.insert(chars, {
 							off = ch_offs,
 							tex = tex,
-							col = ("%X"):format(cur_color),
+							col = cur_color,
 							w = w,
 						})
 					end
@@ -295,7 +297,7 @@ local function make_line_texture(line, lineno, pos, line_width, line_height, cwi
 						table.insert(chars, {
 							off = ch_offs,
 							tex = char_tex(font_name, c),
-							col = ("%X"):format(cur_color),
+							col = cur_color,
 							w = w,
 						})
 					end
@@ -374,7 +376,6 @@ function mcl_more_signs.make_sign_texture(lines, pos)
 	local char_width_wide
 	local colorbgw
 	local widemult = meta:get_int("widefont") == 1 and 0.5 or 1
-	local force_unicode_font = meta:get_int("unifont") == 1
 
 	if def.font_size and (def.font_size == 32 or def.font_size == 31) then
 		font_size = 32
@@ -392,12 +393,15 @@ function mcl_more_signs.make_sign_texture(lines, pos)
 		colorbgw = mcl_more_signs.colorbgw16
 	end
 
+	local dye_color = meta:get_string("dye_color")
+	local text_color = get_dye_color(dye_color)
+
 	local texture = { ("[combine:%dx%d"):format(line_width, (line_height + def.line_spacing) * def.number_of_lines * def.vert_scaling) }
 
 	local lineno = 0
 	for i = 1, #lines do
 		if lineno >= def.number_of_lines then break end
-		local linetex, ln = make_line_texture(lines[i], lineno, pos, line_width, line_height, char_width, font_size, colorbgw, char_width_wide, force_unicode_font)
+		local linetex, ln = make_line_texture(lines[i], lineno, pos, line_width, line_height, char_width, font_size, colorbgw, char_width_wide, text_color)
 		table.insert(texture, linetex)
 		lineno = ln + 1
 	end

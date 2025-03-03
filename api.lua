@@ -2,7 +2,6 @@
 
 local S = mcl_more_signs.S
 local FS = function(...) return minetest.formspec_escape(S(...)) end
-local unicode_enabled = false -- Включаем/отключаем кнопку unicode
 
 local function log(level, messagefmt, ...)
 	minetest.log(level, "[mcl_more_signs] " .. messagefmt:format(...))
@@ -338,12 +337,24 @@ end
 --4) Открывает форму редактирования таблички для игрока, где он может изменить текст и другие параметры.
 --Эта функция позволяет игроку правым кликом открыть интерфейс для редактирования таблички.
 function mcl_more_signs.rightclick_sign(pos, node, player, itemstack, pointed_thing)
+	local item = player:get_wielded_item()
+	local iname = item:get_name()
+
 	if not player or not mcl_more_signs.can_modify(pos, player) then 
 		return 
 	end
 
 	if not player.get_meta then 
 		return 
+	end
+
+	-- check the wielded item to make sure that it is a dye.
+	if iname:match("^mcl_dye:") then
+		local meta = minetest.get_meta(pos)
+		meta:set_string("dye_color", iname)
+		mcl_more_signs.update_sign(pos)
+		itemstack:take_item()
+		return itemstack
 	end
 
 	player:get_meta():set_string("signslib:pos", minetest.pos_to_string(pos))
@@ -445,6 +456,7 @@ local function get_signmeta(pos)
 	local owner = meta:get_string("owner")
 	local formspec = meta:get_string("formspec")
 	local infotext = meta:get_string("infotext")
+	local dye_color = meta:get_string("dye_color") ~= "" and meta:get_string("dye_color") or def.default_color
 
 	--[[
 	if glow == "true" then 
@@ -474,6 +486,7 @@ local function get_signmeta(pos)
 		formspec = formspec,
 		infotext = infotext,
 		yaw = yaw,
+		dye_color = dye_color,
 	}
 end
 
@@ -481,7 +494,7 @@ local function set_signmeta(pos, data)
 	local meta = minetest.get_meta(pos)
 
 	if data.text then meta:set_string("text", data.text) end
-	--if def.color then meta:set_string("color", def.color) end
+	if data.dye_color then meta:set_string("dye_color", data.dye_color) end
 	if data.glow then meta:set_string("glow", data.glow) end
 	if data.owner then meta:set_string("owner", data.owner) end
 	if data.formspec then meta:set_string("formspec", data.formspec) end
@@ -883,7 +896,7 @@ function mcl_more_signs.register_sign(name, raw_def)
 		def.x_offset = raw_def.x_offset or mcl_more_signs.standard_xoffs
 		def.y_offset = raw_def.y_offset or mcl_more_signs.standard_yoffs
 		def.chars_per_line = raw_def.chars_per_line or mcl_more_signs.standard_cpl
-		def.default_color = raw_def.default_color or "0"
+		def.default_color = raw_def.default_color or "mcl_dye:black"
 		if not raw_def.on_place then
 			def.on_place = function(itemstack, placer, pointed_thing)
 				mcl_more_signs.on_place(itemstack, placer, pointed_thing)
@@ -1076,27 +1089,18 @@ end)
 function get_sign_formspec(pos, nodename)
 	local meta = minetest.get_meta(pos)
 	local txt = meta:get_string("text")
-	local state = meta:get_int("unifont") == 1 and "on" or "off"
 
 	local formspec = {
-		"size[6,4]",
+		"size[6,2.8]",
 		"background[-0.5,-0.5;7,5;signs_lib_sign_bg.png]",
-		"image[0.1,2.4;7,1;signs_lib_sign_color_palette.png]",
-		"textarea[0.15,-0.2;6.3,2.8;text;;" .. minetest.formspec_escape(txt) .. "]",
-		"button_exit[3.7,3.4;2,1;ok;" .. S("Write") .. "]",
+		"textarea[0.15,0;6.3,2.5;text;;" .. minetest.formspec_escape(txt) .. "]",
+		"button_exit[4.5,2.2;1.5,0.8;ok;" .. S("Write") .. "]",
 	}
 
-	-- Добавление кнопки Unicode, если unicode_enabled = true
-	if unicode_enabled then
-		table.insert(formspec, "label[0.3,3.4;" .. FS("Unicode font") .. "]")
-		table.insert(formspec, "image_button[0.6,3.7;1,0.6;signs_lib_switch_" .. state .. ".png;uni_" .. 
-			state .. ";;;false;signs_lib_switch_interm.png]")
-	end
-
 	if minetest.registered_nodes[nodename].allow_widefont then
-		state = meta:get_int("widefont") == 1 and "on" or "off"
-		formspec[#formspec+1] = "label[2.1,3.4;" .. FS("Wide font") .. "]"
-		formspec[#formspec+1] = "image_button[2.3,3.7;1,0.6;signs_lib_switch_" .. state .. ".png;wide_" .. 
+		local state = meta:get_int("widefont") == 1 and "on" or "off"
+		formspec[#formspec+1] = "label[0.0,2.3;" .. FS("Wide font") .. "]"
+		formspec[#formspec+1] = "image_button[1.3,2.2;1,0.8;signs_lib_switch_" .. state .. ".png;wide_" .. 
 			state .. ";;;false;signs_lib_switch_interm.png]"
 	end
 
