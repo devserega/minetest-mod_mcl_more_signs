@@ -38,19 +38,19 @@ local signs = {
 		}
 	},
 	{
-		name = "deepslate",
-		description = S("Deepslate Sign"),
-		inventory_image = "signs_lib_sign_deepslate_inv.png",
+		name = "cobbled_deepslate",
+		description = S("Cobbled Deepslate Sign"),
+		inventory_image = "signs_lib_sign_cobbled_deepslate_inv.png",
 		tiles = {
-			"signs_lib_sign_wall_deepslate.png",
-			"signs_lib_sign_wall_deepslate_edges.png",
+			"signs_lib_sign_wall_cobbled_deepslate.png",
+			"signs_lib_sign_wall_cobbled_deepslate_edges.png",
 			"default_wood.png"
 		},
 		groups = mcl_more_signs.standard_stone_groups,
 		sounds = mcl_more_signs.standard_stone_sign_sounds,
 		recipe = {
-			{"mcl_core:deepslate", "mcl_core:deepslate", "mcl_core:deepslate"},
-			{"mcl_core:deepslate", "mcl_core:deepslate", "mcl_core:deepslate"},
+			{"mcl_deepslate:deepslate_cobbled", "mcl_deepslate:deepslate_cobbled", "mcl_deepslate:deepslate_cobbled"},
+			{"mcl_deepslate:deepslate_cobbled", "mcl_deepslate:deepslate_cobbled", "mcl_deepslate:deepslate_cobbled"},
 			{"", "mcl_core:stick", ""}
 		},
 		default_color = "mcl_dye:white"
