@@ -2,69 +2,123 @@
 
 local S = mcl_more_signs.S
 
-mcl_more_signs.register_sign("mcl_more_signs:sign_granite", {
-	description = S("Granite Sign"),
-	_tt_help = S("Can be written"),
-	inventory_image = "signs_lib_sign_granite_inv.png",
-	tiles = {
-		"signs_lib_sign_wall_granite.png",
-		"signs_lib_sign_wall_granite_edges.png",
-		-- items 3 - 5 are not set, so mcl_more_signs will use its standard pole
-		-- mount, hanging, and yard sign stick textures.
-		"default_wood.png" -- for the yard sign's stick
+local signs = {
+	{
+		name = "granite",
+		description = S("Granite Sign"),
+		inventory_image = "signs_lib_sign_granite_inv.png",
+		tiles = {
+			"signs_lib_sign_wall_granite.png",
+			"signs_lib_sign_wall_granite_edges.png",
+			"default_wood.png"
+		},
+		groups = mcl_more_signs.standard_stone_groups,
+		sounds = mcl_more_signs.standard_stone_sign_sounds,
+		recipe = {
+			{"mcl_core:granite", "mcl_core:granite", "mcl_core:granite"},
+			{"mcl_core:granite", "mcl_core:granite", "mcl_core:granite"},
+			{"", "mcl_core:stick", ""}
+		}
 	},
-	groups = mcl_more_signs.standard_stone_groups,
-	sounds = mcl_more_signs.standard_stone_sign_sounds,
-	entity_info = "standard",
-	allow_hanging = true,
-	allow_widefont = true,
-	allow_onpole = true,
-	allow_yard = true,
-	allow_wall = true,
-	use_texture_alpha = "clip"
-})
+	{
+		name = "diorite",
+		description = S("Diorite Sign"),
+		inventory_image = "signs_lib_sign_diorite_inv.png",
+		tiles = {
+			"signs_lib_sign_wall_diorite.png",
+			"signs_lib_sign_wall_diorite_edges.png",
+			"default_wood.png"
+		},
+		groups = mcl_more_signs.standard_stone_groups,
+		sounds = mcl_more_signs.standard_stone_sign_sounds,
+		recipe = {
+			{"mcl_core:diorite", "mcl_core:diorite", "mcl_core:diorite"},
+			{"mcl_core:diorite", "mcl_core:diorite", "mcl_core:diorite"},
+			{"", "mcl_core:stick", ""}
+		}
+	},
+	{
+		name = "deepslate",
+		description = S("Deepslate Sign"),
+		inventory_image = "signs_lib_sign_deepslate_inv.png",
+		tiles = {
+			"signs_lib_sign_wall_deepslate.png",
+			"signs_lib_sign_wall_deepslate_edges.png",
+			"default_wood.png"
+		},
+		groups = mcl_more_signs.standard_stone_groups,
+		sounds = mcl_more_signs.standard_stone_sign_sounds,
+		recipe = {
+			{"mcl_core:deepslate", "mcl_core:deepslate", "mcl_core:deepslate"},
+			{"mcl_core:deepslate", "mcl_core:deepslate", "mcl_core:deepslate"},
+			{"", "mcl_core:stick", ""}
+		},
+		default_color = "mcl_dye:white"
+	},
+	{
+		name = "andesite",
+		description = S("Andesite Sign"),
+		inventory_image = "signs_lib_sign_andesite_inv.png",
+		tiles = {
+			"signs_lib_sign_wall_andesite.png",
+			"signs_lib_sign_wall_andesite_edges.png",
+			"default_wood.png"
+		},
+		groups = mcl_more_signs.standard_stone_groups,
+		sounds = mcl_more_signs.standard_stone_sign_sounds,
+		recipe = {
+			{"mcl_core:andesite", "mcl_core:andesite", "mcl_core:andesite"},
+			{"mcl_core:andesite", "mcl_core:andesite", "mcl_core:andesite"},
+			{"", "mcl_core:stick", ""}
+		},
+	},
+	{
+		name = "steel",
+		description = S("Steel Sign"),
+		inventory_image = "signs_lib_sign_steel_inv.png",
+		tiles = {
+			"signs_lib_sign_wall_steel.png",
+			"signs_lib_sign_wall_steel_edges.png",
+			nil,
+			nil,
+			"default_steel_block.png"
+		},
+		groups = mcl_more_signs.standard_steel_groups,
+		sounds = mcl_more_signs.standard_steel_sign_sounds,
+		recipe = {
+			{"mcl_core:iron_ingot", "mcl_core:iron_ingot", "mcl_core:iron_ingot"},
+			{"mcl_core:iron_ingot", "mcl_core:iron_ingot", "mcl_core:iron_ingot"},
+			{"", "mcl_core:iron_ingot", ""}
+		},
+		default_color = "mcl_dye:black",
+		locked = true
+	}
+}
 
-minetest.register_craft({
-	output = "mcl_more_signs:sign_granite",
-	recipe = {
-		{"mcl_core:granite_smooth", "mcl_core:granite_smooth", "mcl_core:granite_smooth"},
-		{"mcl_core:granite_smooth", "mcl_core:granite_smooth", "mcl_core:granite_smooth"},
-		{"", "mcl_core:stick", ""},
-	},
-})
+for _, sign in ipairs(signs) do
+	mcl_more_signs.register_sign("mcl_more_signs:sign_" .. sign.name, {
+		description = sign.description,
+		_tt_help = S("Can be written"),
+		inventory_image = sign.inventory_image,
+		tiles = sign.tiles,
+		groups = sign.groups,
+		sounds = sign.sounds,
+		entity_info = "standard",
+		allow_hanging = true,
+		allow_widefont = true,
+		allow_onpole = true,
+		allow_yard = true,
+		allow_wall = true,
+		use_texture_alpha = "clip",
+		default_color = sign.default_color,
+		locked = sign.locked
+	})
 
-mcl_more_signs.register_sign("mcl_more_signs:sign_steel", {
-	description = S("Steel Sign"),
-	_tt_help = S("Can be written"),
-	inventory_image = "signs_lib_sign_steel_inv.png",
-	tiles = {
-		"signs_lib_sign_wall_steel.png", -- 1. Основная поверхность знака
-		"signs_lib_sign_wall_steel_edges.png", -- 2. Края знака
-		nil, -- not set, so it'll use the standard pole mount texture -- 3. Текстура для крепления к столбу (по умолчанию)
-		nil, -- not set, so it'll use the standard hanging chains texture -- 4. Текстура для подвесных цепей (по умолчанию)
-		"default_steel_block.png" -- for the yard sign's stick -- 5. Текстура для стойки в виде дворового знака (yard sign)
-	},
-	groups = mcl_more_signs.standard_steel_groups,
-	sounds = mcl_more_signs.standard_steel_sign_sounds,
-	locked = true,
-	entity_info = "standard",
-	allow_hanging = true,
-	allow_widefont = true,
-	allow_onpole = true,
-	allow_yard = true,
-	allow_wall = true,
-	use_texture_alpha = "clip",
-	default_color = "mcl_dye:black"
-})
-
-minetest.register_craft({
-	output = "mcl_more_signs:sign_steel",
-	recipe = {
-		{"mcl_core:iron_ingot", "mcl_core:iron_ingot", "mcl_core:iron_ingot"},
-		{"mcl_core:iron_ingot", "mcl_core:iron_ingot", "mcl_core:iron_ingot"},
-		{"", "mcl_core:iron_ingot", ""},
-	},
-})
+	minetest.register_craft({
+		output = "mcl_more_signs:sign_" .. sign.name,
+		recipe = sign.recipe
+	})
+end
 
 --[[
 minetest.register_alias("signs:sign_hanging",                   "default:sign_wood_hanging")
