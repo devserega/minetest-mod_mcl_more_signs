@@ -1100,7 +1100,7 @@ function get_sign_formspec(pos, nodename)
 	if minetest.registered_nodes[nodename].allow_widefont then
 		local state = meta:get_int("widefont") == 1 and "on" or "off"
 		formspec[#formspec+1] = "label[0.0,2.3;" .. FS("Wide font") .. "]"
-		formspec[#formspec+1] = "image_button[1.3,2.2;1,0.8;signs_lib_switch_" .. state .. ".png;wide_" .. 
+		formspec[#formspec+1] = "image_button[1.4,2.2;1,0.8;signs_lib_switch_" .. state .. ".png;wide_" .. 
 			state .. ";;;false;signs_lib_switch_interm.png]"
 	end
 
